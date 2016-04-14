@@ -65,7 +65,8 @@ namespace NicoNocoApp.Common
                                 VerticalOptions = LayoutOptions.Start,
                                 HorizontalTextAlignment = TextAlignment.Start,
                                 VerticalTextAlignment = TextAlignment.Start,
-                                LineBreakMode = LineBreakMode.WordWrap,
+                                MinimumWidthRequest = 10,
+                                LineBreakMode = LineBreakMode.CharacterWrap,
                             };
                             Image iconImage = new Image()
                             {
@@ -78,6 +79,7 @@ namespace NicoNocoApp.Common
                             {
                                 View = new StackLayout()
                                 {
+                                    Padding = new Thickness(3,8),
                                     Orientation = StackOrientation.Horizontal,
                                     HorizontalOptions = LayoutOptions.FillAndExpand,
                                     VerticalOptions=LayoutOptions.Start,
@@ -113,7 +115,8 @@ namespace NicoNocoApp.Common
                                                 },
                                                 new Frame()
                                                 {
-                                                    Padding = new Thickness(2, 2),
+                                                    Padding = new Thickness(15, 10),
+                                                    OutlineColor = Color.FromRgb(0.6, 0.8, 1.0),
                                                     Content = statusLabel,
                                                 }
                                             }
@@ -172,7 +175,7 @@ namespace NicoNocoApp.Common
                 {
                     Device.BeginInvokeOnMainThread(() =>
                     {
-                        TweetText = "";
+                        tweetEntry.Text = TweetText = "";
                         tweetEntry.IsEnabled = true;
                         tweetButton.IsEnabled = true;
                     });
