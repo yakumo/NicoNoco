@@ -117,6 +117,7 @@ namespace NicoNocoApp.Common
                                                 {
                                                     Padding = new Thickness(15, 10),
                                                     OutlineColor = Color.FromRgb(0.6, 0.8, 1.0),
+                                                    HasShadow=true,
                                                     Content = statusLabel,
                                                 }
                                             }

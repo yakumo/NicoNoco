@@ -25,7 +25,7 @@ namespace NicoNocoApp.Common
                     {
                         Device.BeginInvokeOnMainThread(() =>
                         {
-                            MainPage.Navigation.PopModalAsync(true).ContinueWith((res) =>
+                            MainPage.Navigation.PopAsync(true).ContinueWith((res) =>
                             {
                                 authPage = null;
                             });
@@ -52,7 +52,7 @@ namespace NicoNocoApp.Common
                             Device.BeginInvokeOnMainThread(() =>
                             {
                                 authPage = new AuthorizePage();
-                                MainPage.Navigation.PushModalAsync(authPage, true).ContinueWith((res1) =>
+                                MainPage.Navigation.PushAsync(authPage, true).ContinueWith((res1) =>
                                 {
                                 });
                             });
