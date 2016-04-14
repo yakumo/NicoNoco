@@ -121,8 +121,8 @@ namespace NicoNocoApp.Common
                                     },
                                 },
                             };
-                            nameLabel.SetBinding(Label.TextProperty, new Binding("Status.User.ScreenName"));
-                            idLabel.SetBinding(Label.TextProperty,new Binding("Status.User.Name"));
+                            nameLabel.SetBinding(Label.TextProperty, new Binding("Status.User.Name"));
+                            idLabel.SetBinding(Label.TextProperty,new Binding("Status.User.ScreenName"));
                             statusLabel.SetBinding(Label.TextProperty, new Binding("Status.Text"));
                             iconImage.SetBinding(Image.SourceProperty, new Binding("Status.User.ProfileImageUrl"));
                             return ret;
