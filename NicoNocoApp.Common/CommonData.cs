@@ -1,5 +1,7 @@
 ﻿using CoreTweet;
 using CoreTweet.Streaming;
+using Plugin.Settings;
+using Plugin.Settings.Abstractions;
 using Reactive;
 using Reactive.Bindings;
 using System;
@@ -69,20 +71,19 @@ namespace NicoNocoApp.Common
 
             IsConnect.Subscribe((flg) =>
             {
-            Debug.WriteLine("IsConnect.Subscribe:" + flg);
-            if (flg)
-            {
-                if (_StreamingMessage == null)
+                if (flg)
                 {
-                    _StreamingMessage = this.Tokens.Value.Streaming.UserAsObservable().Publish();
-                    _StreamingMessage.OfType<StatusMessage>().Subscribe(x =>
+                    if (_StreamingMessage == null)
                     {
-                        Debug.WriteLine(String.Format("{0}: {1}", x.Status.User.ScreenName, x.Status.Text));
-                        Device.BeginInvokeOnMainThread(() =>
+                        _StreamingMessage = this.Tokens.Value.Streaming.UserAsObservable().Publish();
+                        _StreamingMessage.OfType<StatusMessage>().Subscribe(x =>
                         {
-                            TweetList.Insert(0, x);
+                            Debug.WriteLine(String.Format("{0}: {1}", x.Status.User.ScreenName, x.Status.Text));
+                            Device.BeginInvokeOnMainThread(() =>
+                            {
+                                TweetList.Insert(0, x);
+                            });
                         });
-                    });
                     }
                     if (_StreamingDisposable == null)
                     {
@@ -100,13 +101,53 @@ namespace NicoNocoApp.Common
             });
         }
 
+        const string AccessTokenKey = "AccessToken";
+        const string AccessTokenSecretKey = "AccessTokenSecret";
+
         public async Task<bool> LoadAsync()
         {
-            return false;
+            bool ret = false;
+            try
+            {
+                ISettings settings = CrossSettings.Current;
+                string appAccessToken = settings.GetValueOrDefault<string>(AccessTokenKey, String.Empty);
+                if (!String.IsNullOrEmpty(appAccessToken))
+                {
+                    AccessToken = appAccessToken;
+                }
+                string appAccessSecret = settings.GetValueOrDefault<string>(AccessTokenSecretKey, String.Empty);
+                if (!String.IsNullOrEmpty(appAccessSecret))
+                {
+                    AccessTokenSecret = appAccessSecret;
+                }
+                if (!String.IsNullOrEmpty(AccessToken) && !String.IsNullOrEmpty(AccessTokenSecret))
+                {
+                    Tokens t = CoreTweet.Tokens.Create(Constants.Internal.ConsumerKey, Constants.Internal.ConsumerSecret, AccessToken, AccessTokenSecret);
+                    if (t != null)
+                    {
+                        this.Tokens.Value = t;
+                    }
+                }
+                if (this.Tokens.Value?.Account != null)
+                {
+                    IsAuthorized.Value = true;
+                    AccessToken = this.Tokens.Value.AccessToken;
+                    AccessTokenSecret = this.Tokens.Value.AccessTokenSecret;
+                }
+                ret = true;
+            }
+            catch (Exception)
+            {
+                ret = false;
+            }
+            return ret;
         }
 
         public async Task<bool> SaveAsync()
         {
+            ISettings settings = CrossSettings.Current;
+            settings.AddOrUpdateValue<string>(AccessTokenKey, AccessToken);
+            settings.AddOrUpdateValue<string>(AccessTokenSecretKey, AccessTokenSecret);
             return false;
         }
 

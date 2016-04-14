@@ -43,14 +43,43 @@ namespace NicoNocoApp.Common
         {
             if (!CommonData.Instance.IsAuthorized.Value)
             {
-                authPage = new AuthorizePage();
-                MainPage.Navigation.PushModalAsync(authPage, true).ContinueWith((res) =>
+                CommonData.Instance.LoadAsync().ContinueWith((res) =>
                 {
+                    if (res.Result)
+                    {
+                        if (!CommonData.Instance.IsAuthorized.Value)
+                        {
+                            Device.BeginInvokeOnMainThread(() =>
+                            {
+                                authPage = new AuthorizePage();
+                                MainPage.Navigation.PushModalAsync(authPage, true).ContinueWith((res1) =>
+                                {
+                                });
+                            });
+                        }
+                    }
                 });
             }
             else
             {
             }
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+        }
+
+        protected override void OnSleep()
+        {
+            base.OnSleep();
+            CommonData.Instance.SaveAsync().ContinueWith((res) => { });
+        }
+
+        protected override void OnResume()
+        {
+            base.OnResume();
+            CommonData.Instance.LoadAsync().ContinueWith((res) => { });
         }
     }
 }
