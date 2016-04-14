@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NicoNocoApp.Common;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -56,6 +57,7 @@ namespace NicoNoco.uwp
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
+                CommonData d = CommonData.Instance;
                 Xamarin.Forms.Forms.Init(e);
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)

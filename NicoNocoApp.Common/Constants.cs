@@ -10,8 +10,8 @@ namespace NicoNocoApp.Common
     {
         internal class Internal
         {
-            public const string ConsumerKey = "stD12d44cYOOIu0JQllk7w";
-            public const string ConsumerSecret = "fALpdDiaJOX4Dq9W2TysiQJATsfm1gaJQrmEXe2UmY";
+            public const string ConsumerKey = SystemSettings.ConsumerKey;
+            public const string ConsumerSecret = SystemSettings.ConsumerSecret;
         }
     }
 }

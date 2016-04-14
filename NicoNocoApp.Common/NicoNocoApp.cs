@@ -50,7 +50,6 @@ namespace NicoNocoApp.Common
             }
             else
             {
-                CommonData.Instance.StartUpdator();
             }
         }
     }

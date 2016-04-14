@@ -8,7 +8,7 @@ namespace NicoNocoApp.Common
 {
     class SystemSettings
     {
-        public const string ConsumerKey = "stD12d44cYOOIu0JQllk7w";
-        public const string ConsumerSecret = "fALpdDiaJOX4Dq9W2TysiQJATsfm1gaJQrmEXe2UmY";
+        public const string ConsumerKey = "88OS15YeaKyhZjgoWSQqI09Ne";
+        public const string ConsumerSecret = "ucDk6uBWO28p1TrYoU5kHII9FA5Mx44FPrWMvcyE0s0I08UAIl";
     }
 }

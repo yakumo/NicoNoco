@@ -3,6 +3,7 @@
     "CoreTweet": "0.6.2.277",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
     "ReactiveProperty": "2.7.1",
+    "Rx-Main": "2.2.5",
     "Xamarin.Forms": "2.1.0.6529"
   },
   "frameworks": {

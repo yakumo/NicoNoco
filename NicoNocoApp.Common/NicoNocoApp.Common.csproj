@@ -41,6 +41,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="NicoNocoApp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="settings.cs" />
     <Compile Include="TweetListPage.cs" />
   </ItemGroup>
   <ItemGroup>
