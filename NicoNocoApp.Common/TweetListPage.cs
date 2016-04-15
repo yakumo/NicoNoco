@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NicoNocoApp.Common.Strings;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,22 +13,30 @@ namespace NicoNocoApp.Common
     {
         Entry tweetEntry;
         Button tweetButton;
+        ToolbarItem streamMenuItem;
         public string TweetText { get; set; }
 
         public TweetListPage()
         {
-            ToolbarItems.Add(new ToolbarItem("Streaming", null, () => { CommonData.Instance.IsConnect.Value = !CommonData.Instance.IsConnect.Value; }));
+            streamMenuItem = new ToolbarItem()
+            {
+                Name = "Stream",
+                Text = LocalizedString.Stream,
+                Icon = "Images/play-2.png",
+            };
+            ToolbarItems.Add(streamMenuItem);
+
             tweetEntry = new Entry()
             {
                 HorizontalOptions = LayoutOptions.FillAndExpand,
                 VerticalOptions = LayoutOptions.Center,
-                Placeholder = "What do you do",
+                Placeholder = LocalizedString.WhatYouDoing,
             };
             tweetButton = new Button()
             {
                 HorizontalOptions = LayoutOptions.End,
                 VerticalOptions = LayoutOptions.Center,
-                Text = "Tweet",
+                Text = LocalizedString.Tweet,
             };
             Content = new StackLayout()
             {
@@ -146,9 +155,27 @@ namespace NicoNocoApp.Common
                     },
                 }
             };
+
+            UpdateIcons();
+            CommonData.Instance.IsConnect.Subscribe((flg) =>
+            {
+                UpdateIcons();
+            });
+
             tweetEntry.SetBinding(Entry.TextProperty, new Binding("TweetText", BindingMode.TwoWay));
             tweetEntry.TextChanged += TweetEntry_TextChanged;
             tweetButton.Clicked += TweetButton_Clicked;
+            streamMenuItem.Clicked += StreamMenuItem_Clicked;
+        }
+
+        private void UpdateIcons()
+        {
+            streamMenuItem.Icon = (CommonData.Instance.IsConnect.Value) ? "Images/pause-2.png" : "Images/play-2.png";
+        }
+
+        private void StreamMenuItem_Clicked(object sender, EventArgs e)
+        {
+            CommonData.Instance.IsConnect.Value = !CommonData.Instance.IsConnect.Value;
         }
 
         private void TweetEntry_TextChanged(object sender, TextChangedEventArgs e)
