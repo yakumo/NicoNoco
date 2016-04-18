@@ -18,7 +18,17 @@
     <Content Include="$(MSBuildThisFileDirectory)Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="$(MSBuildThisFileDirectory)Images\nut-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Images\pause-2.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Images\pause.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Images\pause@2x.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Images\picture.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Images\picture@2x.png" />
     <Content Include="$(MSBuildThisFileDirectory)Images\play-2.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Images\play.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Images\play@2x.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Images\settings.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Images\settings@2x.png" />
     <Content Include="$(MSBuildThisFileDirectory)Images\speech-bubble-outline.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Images\tweet.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Images\tweet@2x.png" />
   </ItemGroup>
 </Project>

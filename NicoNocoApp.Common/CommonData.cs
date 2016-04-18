@@ -87,7 +87,18 @@ namespace NicoNocoApp.Common
                     }
                     if (_StreamingDisposable == null)
                     {
-                        _StreamingDisposable = _StreamingMessage.Connect();
+                        try
+                        {
+                            Debug.WriteLine("start connection");
+                            _StreamingDisposable = _StreamingMessage.Connect();
+                            Debug.WriteLine("connected");
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine("connecting exception");
+                            Debug.WriteLine(ex);
+                            _StreamingDisposable = null;
+                        }
                     }
                 }
                 else

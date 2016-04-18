@@ -57,7 +57,6 @@ namespace NicoNoco.uwp
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
-                CommonData d = CommonData.Instance;
                 Xamarin.Forms.Forms.Init(e);
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)

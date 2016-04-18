@@ -43,19 +43,20 @@ namespace NicoNocoApp.Common
                 Orientation = StackOrientation.Vertical,
                 Children =
                 {
-                    codeWebView,
                     new StackLayout()
                     {
+                        Padding = new Thickness(5,5),
                         Orientation = StackOrientation.Horizontal,
                         HorizontalOptions = LayoutOptions.FillAndExpand,
-                        VerticalOptions = LayoutOptions.End,
+                        VerticalOptions = LayoutOptions.Start,
                         Children=
                         {
                             codeInput,
                             enterButton,
                         },
                         BackgroundColor = Color.FromRgb(0.9,0.9,1.0),
-                    }
+                    },
+                    codeWebView,
                 },
             };
 

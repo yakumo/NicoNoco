@@ -11,33 +11,25 @@ namespace NicoNocoApp.Common
 {
     public class TweetListPage : ContentPage
     {
-        Entry tweetEntry;
-        Button tweetButton;
         ToolbarItem streamMenuItem;
         public string TweetText { get; set; }
 
         public TweetListPage()
         {
+            ToolbarItems.Add(new ToolbarItem()
+            {
+                Text = LocalizedString.Tweet,
+                Icon = "Images/tweet.png",
+                Command = new Command(() => { ShowTweetPage(); }),
+            });
             streamMenuItem = new ToolbarItem()
             {
-                Name = "Stream",
                 Text = LocalizedString.Stream,
-                Icon = "Images/play-2.png",
+                Icon = "Images/play.png",
+                Command = new Command(() => { ToggleConnection(); }),
             };
             ToolbarItems.Add(streamMenuItem);
 
-            tweetEntry = new Entry()
-            {
-                HorizontalOptions = LayoutOptions.FillAndExpand,
-                VerticalOptions = LayoutOptions.Center,
-                Placeholder = LocalizedString.WhatYouDoing,
-            };
-            tweetButton = new Button()
-            {
-                HorizontalOptions = LayoutOptions.End,
-                VerticalOptions = LayoutOptions.Center,
-                Text = LocalizedString.Tweet,
-            };
             Content = new StackLayout()
             {
                 Orientation = StackOrientation.Vertical,
@@ -49,6 +41,7 @@ namespace NicoNocoApp.Common
                     {
                         HorizontalOptions = LayoutOptions.FillAndExpand,
                         VerticalOptions = LayoutOptions.FillAndExpand,
+                        HasUnevenRows = true,
                         ItemsSource = CommonData.Instance.TweetList,
                         ItemTemplate = new DataTemplate(() =>
                         {
@@ -141,18 +134,6 @@ namespace NicoNocoApp.Common
                             return ret;
                         }),
                     },
-                    new StackLayout()
-                    {
-                        BindingContext = this,
-                        Orientation = StackOrientation.Horizontal,
-                        HorizontalOptions = LayoutOptions.FillAndExpand,
-                        VerticalOptions = LayoutOptions.End,
-                        Children =
-                        {
-                            tweetEntry,
-                            tweetButton,
-                        },
-                    },
                 }
             };
 
@@ -161,54 +142,26 @@ namespace NicoNocoApp.Common
             {
                 UpdateIcons();
             });
+        }
 
-            tweetEntry.SetBinding(Entry.TextProperty, new Binding("TweetText", BindingMode.TwoWay));
-            tweetEntry.TextChanged += TweetEntry_TextChanged;
-            tweetButton.Clicked += TweetButton_Clicked;
-            streamMenuItem.Clicked += StreamMenuItem_Clicked;
+        private void ToggleConnection()
+        {
+            CommonData.Instance.IsConnect.Value = !CommonData.Instance.IsConnect.Value;
+        }
+
+        private void ShowTweetPage()
+        {
+            Navigation.PushAsync(new TweetInputPagecs(), true).ContinueWith((res) => { });
         }
 
         private void UpdateIcons()
         {
-            streamMenuItem.Icon = (CommonData.Instance.IsConnect.Value) ? "Images/pause-2.png" : "Images/play-2.png";
+            streamMenuItem.Icon = (CommonData.Instance.IsConnect.Value) ? "Images/pause.png" : "Images/play.png";
         }
 
         private void StreamMenuItem_Clicked(object sender, EventArgs e)
         {
             CommonData.Instance.IsConnect.Value = !CommonData.Instance.IsConnect.Value;
-        }
-
-        private void TweetEntry_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (String.IsNullOrEmpty(e.NewTextValue))
-            {
-                tweetButton.IsEnabled = false;
-            }
-            else
-            {
-                tweetButton.IsEnabled = true;
-            }
-        }
-
-        private void TweetButton_Clicked(object sender, EventArgs e)
-        {
-            if (!String.IsNullOrEmpty(TweetText))
-            {
-                Device.BeginInvokeOnMainThread(() =>
-                {
-                    tweetEntry.IsEnabled = false;
-                    tweetButton.IsEnabled = false;
-                });
-                CommonData.Instance.Tokens.Value.Statuses.UpdateAsync(status => TweetText).ContinueWith((res) =>
-                {
-                    Device.BeginInvokeOnMainThread(() =>
-                    {
-                        tweetEntry.Text = TweetText = "";
-                        tweetEntry.IsEnabled = true;
-                        tweetButton.IsEnabled = true;
-                    });
-                });
-            }
         }
     }
 }

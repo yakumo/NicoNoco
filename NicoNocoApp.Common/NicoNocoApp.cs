@@ -13,6 +13,8 @@ namespace NicoNocoApp.Common
 
         public NicoNocoApp()
         {
+            CommonData d = CommonData.Instance;
+
             MainPage = new NavigationPage(new TweetListPage()
             {
             });
@@ -25,7 +27,7 @@ namespace NicoNocoApp.Common
                     {
                         Device.BeginInvokeOnMainThread(() =>
                         {
-                            MainPage.Navigation.PopAsync(true).ContinueWith((res) =>
+                            MainPage.Navigation.PopModalAsync(true).ContinueWith((res) =>
                             {
                                 authPage = null;
                             });
@@ -52,7 +54,7 @@ namespace NicoNocoApp.Common
                             Device.BeginInvokeOnMainThread(() =>
                             {
                                 authPage = new AuthorizePage();
-                                MainPage.Navigation.PushAsync(authPage, true).ContinueWith((res1) =>
+                                MainPage.Navigation.PushModalAsync(authPage, true).ContinueWith((res1) =>
                                 {
                                 });
                             });
