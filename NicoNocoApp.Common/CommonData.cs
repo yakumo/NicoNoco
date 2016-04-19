@@ -84,6 +84,18 @@ namespace NicoNocoApp.Common
                                 TweetList.Insert(0, x);
                             });
                         });
+                        _StreamingMessage.OfType<WarningMessage>().Subscribe(x =>
+                        {
+                            Debug.WriteLine(String.Format("warning: {0}: {1}", x.Code, x.Message));
+                        });
+                        _StreamingMessage.OfType<DeleteMessage>().Subscribe(x =>
+                        {
+                            Debug.WriteLine(String.Format("delete: {0}: {1}", x.Id, x.UserId));
+                        });
+                        _StreamingMessage.OfType<DirectMessage>().Subscribe(x =>
+                        {
+                            Debug.WriteLine(String.Format("DM: {0}: {1}", x.Sender.ScreenName, x.Text));
+                        });
                     }
                     if (_StreamingDisposable == null)
                     {
