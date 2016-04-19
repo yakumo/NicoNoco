@@ -13,6 +13,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NicoNoco.ios", "NicoNoco.io
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NicoNoco.droid", "NicoNoco.droid\NicoNoco.droid.csproj", "{ACF7AFBF-4F0C-4A0A-9BEE-BF93B1A2F3E2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{53DBE99B-BD5A-4C68-8717-E4AFA5CA815B}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		NicoNoco.Resources\NicoNoco.Resources.projitems*{d9d47ef6-ee85-4a45-9446-9fda38e5972f}*SharedItemsImports = 13
