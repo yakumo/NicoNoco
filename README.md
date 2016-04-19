@@ -4,8 +4,8 @@ small Twitter client with Xamarin
 
 ## Xamarin.Forms + CoreTweet
 
-NicoNocoは、とても簡易的なTwitterクライアントです。
-Xamarin.Formsのサンプルとしてご覧ください。
+NicoNocoは、とても簡易的なTwitterクライアントです。  
+Xamarin.Formsのサンプルとしてご覧ください。  
 
 ## 出来る事
 
@@ -18,9 +18,9 @@ Xamarin.Formsのサンプルとしてご覧ください。
 
 ### ストリーム開始
 
-アプリを起動し、PIN認証を済ませると、画面上部に `Stream` メニューが出ています。
-これを一度クリックすると、ストリームAPIを開始し、受信したTweetが表示されます。
-再度押すことで停止します。
+アプリを起動し、PIN認証を済ませると、画面上部に `Stream` メニューが出ています。  
+これを一度クリックすると、ストリームAPIを開始し、受信したTweetが表示されます。  
+再度押すことで停止します。  
 
 ### Tweet書き込み
 
@@ -30,8 +30,8 @@ Xamarin.Formsのサンプルとしてご覧ください。
 
 ## このままではビルドできません
 
-Cloneしただけではファイルが足りないため、ビルドできません。
-NicoNocoApp.Common/SystemSettings.csを以下の内容で作成してください。
+Cloneしただけではファイルが足りないため、ビルドできません。  
+NicoNocoApp.Common/SystemSettings.csを以下の内容で作成してください。  
 
 ```
 namespace NicoNocoApp.Common
@@ -50,13 +50,13 @@ xxxの部分は、Twitterに開発者登録・アプリ登録をして取得できる `Consumer Key` と `
 
 ## 今後の方針
 
-細々と改良していきます。
-気が向いたらストアに登録するかもしれません。
+細々と改良していきます。  
+気が向いたらストアに登録するかもしれません。  
 
 ## TODO
 
-- [ ]スリープ・背面へ回った時にTweet取得を停止する
-- [ ]ストリームメニューで開始したときに、間隔があいていたらその間のTweetを取得する
-- [ ]画像投稿
-- [ ]タブ機能でDMやMensionも表示するように変更
-- [ ]DMやMemsionのNotification表示
+- [ ] スリープ・背面へ回った時にTweet取得を停止する
+- [ ] ストリームメニューで開始したときに、間隔があいていたらその間のTweetを取得する
+- [ ] 画像投稿
+- [ ] タブ機能でDMやMensionも表示するように変更
+- [ ] DMやMemsionのNotification表示
