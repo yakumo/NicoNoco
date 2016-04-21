@@ -31,7 +31,7 @@ namespace NicoNocoApp.Common
 
         #region properties
 
-        public ObservableCollection<StatusMessage> TweetList { get; private set; }
+        public ObservableCollection<FakeStatusMessage> TweetList { get; private set; }
         public ObservableCollection<StatusMessage> ReplyList { get; private set; }
         public ObservableCollection<DirectMessage> DMList { get; private set; }
 
@@ -53,7 +53,7 @@ namespace NicoNocoApp.Common
 
         public CommonData()
         {
-            TweetList = new ReactiveCollection<StatusMessage>();
+            TweetList = new ReactiveCollection<FakeStatusMessage>();
             IsAuthorized = new ReactiveProperty<bool>(false);
             Tokens = new ReactiveProperty<Tokens>();
             IsConnect = new ReactiveProperty<bool>(false);
@@ -85,9 +85,14 @@ namespace NicoNocoApp.Common
                         _StreamingMessage.OfType<StatusMessage>().Subscribe(x =>
                         {
                             Debug.WriteLine(String.Format("{0}: {1}", x.Status.User.ScreenName, x.Status.Text));
+                            x.Status.Dump();
+                            if (x.Status.RetweetedStatus != null)
+                            {
+                                x.Status.RetweetedStatus.Dump();
+                            }
                             Device.BeginInvokeOnMainThread(() =>
                             {
-                                TweetList.Insert(0, x);
+                                TweetList.Insert(0, new FakeStatusMessage(x.Status));
                             });
                         });
                         _StreamingMessage.OfType<EventMessage>().Subscribe(x =>

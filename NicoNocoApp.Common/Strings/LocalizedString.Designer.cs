@@ -62,6 +62,24 @@ namespace NicoNocoApp.Common.Strings {
         }
         
         /// <summary>
+        ///   Retweet by {0} / {1} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string RetweetBy {
+            get {
+                return ResourceManager.GetString("RetweetBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Settings に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Settings {
+            get {
+                return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Stream に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Stream {
