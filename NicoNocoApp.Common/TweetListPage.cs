@@ -21,14 +21,27 @@ namespace NicoNocoApp.Common
                 Text = LocalizedString.Tweet,
                 Icon = "Images/tweet.png",
                 Command = new Command(() => { ShowTweetPage(); }),
+                Order = ToolbarItemOrder.Primary,
+                Priority = 1,
             });
             streamMenuItem = new ToolbarItem()
             {
                 Text = LocalizedString.Stream,
                 Icon = "Images/play.png",
                 Command = new Command(() => { ToggleConnection(); }),
+                Order = ToolbarItemOrder.Primary,
+                Priority = 2,
             };
             ToolbarItems.Add(streamMenuItem);
+
+            ToolbarItems.Add(new ToolbarItem()
+            {
+                Text = LocalizedString.Settings,
+                Icon = "Images/settings.png",
+                Command = new Command(() => { ShowSettingsPage(); }),
+                Order = ToolbarItemOrder.Secondary,
+                Priority = 1,
+            });
 
             Content = new StackLayout()
             {
@@ -77,6 +90,13 @@ namespace NicoNocoApp.Common
                                 HorizontalOptions = LayoutOptions.Start,
                                 VerticalOptions=LayoutOptions.Start,
                             };
+                            Label retweetUserLabel=new Label()
+                            {
+                                HorizontalOptions = LayoutOptions.End,
+                                VerticalOptions = LayoutOptions.Center,
+                                FontSize = 10,
+                                TextColor = Color.FromRgb(0.5,0.5,0.8),
+                            };
                             ViewCell ret = new ViewCell()
                             {
                                 View = new StackLayout()
@@ -119,9 +139,10 @@ namespace NicoNocoApp.Common
                                                 {
                                                     Padding = new Thickness(15, 10),
                                                     OutlineColor = Color.FromRgb(0.6, 0.8, 1.0),
-                                                    HasShadow=true,
+                                                    HasShadow = true,
                                                     Content = statusLabel,
-                                                }
+                                                },
+                                                retweetUserLabel,
                                             }
                                         },
                                     },
@@ -131,6 +152,8 @@ namespace NicoNocoApp.Common
                             idLabel.SetBinding(Label.TextProperty,new Binding("Status.User.ScreenName"));
                             statusLabel.SetBinding(Label.TextProperty, new Binding("Status.Text"));
                             iconImage.SetBinding(Image.SourceProperty, new Binding("Status.User.ProfileImageUrl"));
+                            retweetUserLabel.SetBinding(Label.IsVisibleProperty, new Binding("IsRetweet"));
+                            retweetUserLabel.SetBinding(Label.TextProperty, new Binding("RetweetUserLabel"));
                             return ret;
                         }),
                     },
@@ -152,6 +175,11 @@ namespace NicoNocoApp.Common
         private void ShowTweetPage()
         {
             Navigation.PushAsync(new TweetInputPagecs(), true).ContinueWith((res) => { });
+        }
+
+        private void ShowSettingsPage()
+        {
+            Navigation.PushAsync(new SettingsPage(), true).ContinueWith((res) => { });
         }
 
         private void UpdateIcons()
