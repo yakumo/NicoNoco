@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DirectMessage" xml:space="preserve">
+    <value>DM</value>
+  </data>
+  <data name="Mensions" xml:space="preserve">
+    <value>Reply</value>
+  </data>
   <data name="RetweetBy" xml:space="preserve">
     <value>Retweet by {0} / {1}</value>
   </data>
@@ -125,6 +131,9 @@
   </data>
   <data name="Stream" xml:space="preserve">
     <value>ストリーム</value>
+  </data>
+  <data name="Timeline" xml:space="preserve">
+    <value>Timeline</value>
   </data>
   <data name="Tweet" xml:space="preserve">
     <value>Tweet</value>

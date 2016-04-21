@@ -62,6 +62,24 @@ namespace NicoNocoApp.Common.Strings {
         }
         
         /// <summary>
+        ///   DM に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string DirectMessage {
+            get {
+                return ResourceManager.GetString("DirectMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Reply に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Mensions {
+            get {
+                return ResourceManager.GetString("Mensions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Retweet by {0} / {1} に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string RetweetBy {
@@ -85,6 +103,15 @@ namespace NicoNocoApp.Common.Strings {
         public static string Stream {
             get {
                 return ResourceManager.GetString("Stream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Timeline に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Timeline {
+            get {
+                return ResourceManager.GetString("Timeline", resourceCulture);
             }
         }
         

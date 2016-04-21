@@ -106,6 +106,14 @@ namespace NicoNocoApp.Common
                         _StreamingMessage.OfType<DeleteMessage>().Subscribe(x =>
                         {
                             Debug.WriteLine(String.Format("delete: {0}: {1}", x.Id, x.UserId));
+                            FakeStatusMessage sm = (from ft in TweetList where ft.Status.Id == x.Id select ft).FirstOrDefault();
+                            if (sm != null)
+                            {
+                                Device.BeginInvokeOnMainThread(() =>
+                                {
+                                    TweetList.Remove(sm);
+                                });
+                            }
                         });
                         _StreamingMessage.OfType<DirectMessageMessage>().Subscribe(x =>
                         {
