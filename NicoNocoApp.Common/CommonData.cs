@@ -32,6 +32,8 @@ namespace NicoNocoApp.Common
         #region properties
 
         public ObservableCollection<StatusMessage> TweetList { get; private set; }
+        public ObservableCollection<StatusMessage> ReplyList { get; private set; }
+        public ObservableCollection<DirectMessage> DMList { get; private set; }
 
         public ReactiveProperty<bool> IsAuthorized { get; set; }
         public ReactiveProperty<Tokens> Tokens { get; set; }
@@ -76,6 +78,10 @@ namespace NicoNocoApp.Common
                     if (_StreamingMessage == null)
                     {
                         _StreamingMessage = this.Tokens.Value.Streaming.UserAsObservable().Publish();
+                        _StreamingMessage.Subscribe(x =>
+                        {
+                            Debug.WriteLine("type:" + x.Type);
+                        });
                         _StreamingMessage.OfType<StatusMessage>().Subscribe(x =>
                         {
                             Debug.WriteLine(String.Format("{0}: {1}", x.Status.User.ScreenName, x.Status.Text));
@@ -83,6 +89,10 @@ namespace NicoNocoApp.Common
                             {
                                 TweetList.Insert(0, x);
                             });
+                        });
+                        _StreamingMessage.OfType<EventMessage>().Subscribe(x =>
+                        {
+                            Debug.WriteLine(String.Format("event: {0}: {1}", x.Source.Name, x.Target.Name));
                         });
                         _StreamingMessage.OfType<WarningMessage>().Subscribe(x =>
                         {
@@ -92,9 +102,13 @@ namespace NicoNocoApp.Common
                         {
                             Debug.WriteLine(String.Format("delete: {0}: {1}", x.Id, x.UserId));
                         });
-                        _StreamingMessage.OfType<DirectMessage>().Subscribe(x =>
+                        _StreamingMessage.OfType<DirectMessageMessage>().Subscribe(x =>
                         {
-                            Debug.WriteLine(String.Format("DM: {0}: {1}", x.Sender.ScreenName, x.Text));
+                            Debug.WriteLine(String.Format("DM: {0}: {1}", x.DirectMessage.Sender.Name, x.DirectMessage.Text));
+                        });
+                        _StreamingMessage.OfType<DisconnectMessage>().Subscribe(x =>
+                        {
+                            Debug.WriteLine(String.Format("disconnect: {0}: {1}", x.Code, x.Reason));
                         });
                     }
                     if (_StreamingDisposable == null)
