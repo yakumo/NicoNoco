@@ -124,7 +124,7 @@
     <value>Reply</value>
   </data>
   <data name="RetweetBy" xml:space="preserve">
-    <value>Retweet by {0} / {1}</value>
+    <value>{0} さんがリツイート</value>
   </data>
   <data name="Settings" xml:space="preserve">
     <value>設定</value>
@@ -137,6 +137,9 @@
   </data>
   <data name="Tweet" xml:space="preserve">
     <value>Tweet</value>
+  </data>
+  <data name="UserLabelFormat" xml:space="preserve">
+    <value>{0} / @{1}</value>
   </data>
   <data name="WhatYouDoing" xml:space="preserve">
     <value>何してる？</value>
