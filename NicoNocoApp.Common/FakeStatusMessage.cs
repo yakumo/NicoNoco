@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace NicoNocoApp.Common
 {
-    public class FakeStatusMessage
+    public class FakeStatusMessage : IFakeMessage
     {
         public FakeStatusMessage(Status s)
         {
@@ -17,6 +17,34 @@ namespace NicoNocoApp.Common
 
         private Status _targetStatus;
 
+        private Status Status
+        {
+            get { return _targetStatus.RetweetedStatus ?? _targetStatus; }
+        }
+
+        public long Id { get { return _targetStatus.Id; } }
+
+        public User Writer
+        {
+            get { return Status.User; }
+        }
+
+        public string Text
+        {
+            get { return Status.Text; }
+        }
+
+        public bool IsRetweet
+        {
+            get { return _targetStatus.RetweetedStatus != null; }
+        }
+
+        public User RetweetUser
+        {
+            get { return IsRetweet ? _targetStatus.User : null; }
+        }
+
+        /*
         public Status Status
         {
             get { return _targetStatus.RetweetedStatus ?? _targetStatus; }
@@ -36,5 +64,6 @@ namespace NicoNocoApp.Common
         {
             get { return IsRetweet ? String.Format(LocalizedString.RetweetBy, RetweetUser.Name, RetweetUser.ScreenName) : ""; }
         }
+        */
     }
 }

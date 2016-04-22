@@ -17,6 +17,8 @@ namespace NicoNocoApp.Common
         public string TweetText { get; set; }
         public ObservableCollection<TweetListTabItem> TabItems { get; } = new ObservableCollection<TweetListTabItem>();
 
+        public static IValueConverter userLabelConverter = new MessageUserLabelConverter();
+
         public TweetListPage()
         {
             TabItems.Add(new TweetListTabItem()
@@ -172,18 +174,19 @@ namespace NicoNocoApp.Common
                                 },
                             },
                         };
-                        nameLabel.SetBinding(Label.TextProperty, new Binding("Status.User.Name"));
+                        nameLabel.SetBinding(Label.TextProperty, new Binding("Writer", BindingMode.OneWay, userLabelConverter));
                         idLabel.SetBinding(Label.TextProperty, new Binding("Status.User.ScreenName"));
-                        statusLabel.SetBinding(Label.TextProperty, new Binding("Status.Text"));
-                        iconImage.SetBinding(Image.SourceProperty, new Binding("Status.User.ProfileImageUrl"));
+                        statusLabel.SetBinding(Label.TextProperty, new Binding("Text"));
+                        iconImage.SetBinding(Image.SourceProperty, new Binding("Writer.ProfileImageUrl"));
                         retweetUserLabel.SetBinding(Label.IsVisibleProperty, new Binding("IsRetweet"));
-                        retweetUserLabel.SetBinding(Label.TextProperty, new Binding("RetweetUserLabel"));
+                        retweetUserLabel.SetBinding(Label.TextProperty, new Binding("RetweetUser", BindingMode.OneWay, userLabelConverter));
                         return cell;
                     }),
                 };
 
                 Page ret = new ContentPage()
                 {
+                    BackgroundColor = Color.White,
                     Content = new StackLayout()
                     {
                         Orientation = StackOrientation.Vertical,

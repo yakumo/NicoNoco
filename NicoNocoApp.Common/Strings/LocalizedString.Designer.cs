@@ -80,7 +80,7 @@ namespace NicoNocoApp.Common.Strings {
         }
         
         /// <summary>
-        ///   Retweet by {0} / {1} に類似しているローカライズされた文字列を検索します。
+        ///   Retweet by {0} に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string RetweetBy {
             get {
@@ -121,6 +121,15 @@ namespace NicoNocoApp.Common.Strings {
         public static string Tweet {
             get {
                 return ResourceManager.GetString("Tweet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0} / @{1} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string UserLabelFormat {
+            get {
+                return ResourceManager.GetString("UserLabelFormat", resourceCulture);
             }
         }
         

@@ -33,7 +33,7 @@ namespace NicoNocoApp.Common
 
         public ObservableCollection<FakeStatusMessage> TweetList { get; private set; }
         public ObservableCollection<StatusMessage> ReplyList { get; private set; }
-        public ObservableCollection<DirectMessage> DMList { get; private set; }
+        public ObservableCollection<FakeDirectMessage> DMList { get; private set; }
 
         public ReactiveProperty<bool> IsAuthorized { get; set; }
         public ReactiveProperty<Tokens> Tokens { get; set; }
@@ -54,6 +54,8 @@ namespace NicoNocoApp.Common
         public CommonData()
         {
             TweetList = new ReactiveCollection<FakeStatusMessage>();
+            ReplyList = new ObservableCollection<StatusMessage>();
+            DMList = new ObservableCollection<FakeDirectMessage>();
             IsAuthorized = new ReactiveProperty<bool>(false);
             Tokens = new ReactiveProperty<Tokens>();
             IsConnect = new ReactiveProperty<bool>(false);
@@ -106,7 +108,7 @@ namespace NicoNocoApp.Common
                         _StreamingMessage.OfType<DeleteMessage>().Subscribe(x =>
                         {
                             Debug.WriteLine(String.Format("delete: {0}: {1}", x.Id, x.UserId));
-                            FakeStatusMessage sm = (from ft in TweetList where ft.Status.Id == x.Id select ft).FirstOrDefault();
+                            FakeStatusMessage sm = (from ft in TweetList where ft.Id == x.Id select ft).FirstOrDefault();
                             if (sm != null)
                             {
                                 Device.BeginInvokeOnMainThread(() =>
@@ -118,6 +120,11 @@ namespace NicoNocoApp.Common
                         _StreamingMessage.OfType<DirectMessageMessage>().Subscribe(x =>
                         {
                             Debug.WriteLine(String.Format("DM: {0}: {1}", x.DirectMessage.Sender.Name, x.DirectMessage.Text));
+                            FakeDirectMessage dm = new FakeDirectMessage(x.DirectMessage);
+                            Device.BeginInvokeOnMainThread(() =>
+                            {
+                                DMList.Insert(0, dm);
+                            });
                         });
                         _StreamingMessage.OfType<DisconnectMessage>().Subscribe(x =>
                         {
