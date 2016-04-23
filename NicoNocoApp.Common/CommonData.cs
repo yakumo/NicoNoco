@@ -1,4 +1,5 @@
 ﻿using CoreTweet;
+using CoreTweet.Core;
 using CoreTweet.Streaming;
 using Plugin.LocalNotifications;
 using Plugin.Settings;
@@ -66,6 +67,12 @@ namespace NicoNocoApp.Common
             set { Settings.AddOrUpdateValue<bool>("LastStreamSwitchValue", value); }
         }
 
+        public long LastReceivedTweetId
+        {
+            get { return Settings.GetValueOrDefault<long>("LastReceivedTweetId"); }
+            set { Settings.AddOrUpdateValue<long>("LastReceivedTweetId", value);Debug.WriteLine("received id:" + value); }
+        }
+
         #endregion
 
         #region codes
@@ -96,76 +103,97 @@ namespace NicoNocoApp.Common
             {
                 if (flg)
                 {
-                    if (_StreamingMessage == null)
+                    Task<ListedResponse<Status>> task;
+                    if (LastReceivedTweetId == 0)
                     {
-                        _StreamingMessage = this.Tokens.Value.Streaming.UserAsObservable().Publish();
-                        _StreamingMessage.Subscribe(x =>
+                        task = Tokens.Value.Statuses.HomeTimelineAsync(count => 25);
+                    }
+                    else
+                    {
+                        task = Tokens.Value.Statuses.HomeTimelineAsync(since_id => LastReceivedTweetId);
+                    }
+                    task.ContinueWith((res) =>
+                    {
+                        Device.BeginInvokeOnMainThread(() =>
                         {
-                            Debug.WriteLine("type:" + x.Type);
-                        });
-                        _StreamingMessage.OfType<StatusMessage>().Subscribe(x =>
-                        {
-                            Debug.WriteLine(String.Format("{0}: {1}", x.Status.User.ScreenName, x.Status.Text));
-                            x.Status.Dump();
-                            if (x.Status.RetweetedStatus != null)
+                            foreach (var t in res.Result.Reverse())
                             {
-                                x.Status.RetweetedStatus.Dump();
+                                CommonData.Instance.TweetList.Insert(0, new FakeStatusMessage(t));
+                                CommonData.Instance.LastReceivedTweetId = t.Id;
                             }
-                            Device.BeginInvokeOnMainThread(() =>
+                        });
+
+                        if (_StreamingMessage == null)
+                        {
+                            _StreamingMessage = this.Tokens.Value.Streaming.UserAsObservable().Publish();
+                            _StreamingMessage.Subscribe(x =>
                             {
-                                TweetList.Insert(0, new FakeStatusMessage(x.Status));
+                                Debug.WriteLine("type:" + x.Type);
                             });
-                        });
-                        _StreamingMessage.OfType<EventMessage>().Subscribe(x =>
-                        {
-                            Debug.WriteLine(String.Format("event: {0}: {1}", x.Source.Name, x.Target.Name));
-                        });
-                        _StreamingMessage.OfType<WarningMessage>().Subscribe(x =>
-                        {
-                            Debug.WriteLine(String.Format("warning: {0}: {1}", x.Code, x.Message));
-                        });
-                        _StreamingMessage.OfType<DeleteMessage>().Subscribe(x =>
-                        {
-                            Debug.WriteLine(String.Format("delete: {0}: {1}", x.Id, x.UserId));
-                            FakeStatusMessage sm = (from ft in TweetList where ft.Id == x.Id select ft).FirstOrDefault();
-                            if (sm != null)
+                            _StreamingMessage.OfType<StatusMessage>().Subscribe(x =>
                             {
+                                Debug.WriteLine(String.Format("{0}: {1}", x.Status.User.ScreenName, x.Status.Text));
                                 Device.BeginInvokeOnMainThread(() =>
                                 {
-                                    TweetList.Remove(sm);
+                                    TweetList.Insert(0, new FakeStatusMessage(x.Status));
+                                    if (TweetList.Count > 1000)
+                                    {
+                                        TweetList.Remove(TweetList.Last());
+                                    }
                                 });
-                            }
-                        });
-                        _StreamingMessage.OfType<DirectMessageMessage>().Subscribe(x =>
-                        {
-                            Debug.WriteLine(String.Format("DM: {0}: {1}", x.DirectMessage.Sender.Name, x.DirectMessage.Text));
-                            FakeDirectMessage dm = new FakeDirectMessage(x.DirectMessage);
-                            Device.BeginInvokeOnMainThread(() =>
-                            {
-                                DMList.Insert(0, dm);
+                                LastReceivedTweetId = x.Status.Id;
                             });
-                            CrossLocalNotifications.Current.Show("receive DM", "from @" + x.DirectMessage.Sender.ScreenName);
-                        });
-                        _StreamingMessage.OfType<DisconnectMessage>().Subscribe(x =>
-                        {
-                            Debug.WriteLine(String.Format("disconnect: {0}: {1}", x.Code, x.Reason));
-                        });
-                    }
-                    if (_StreamingDisposable == null)
-                    {
-                        try
-                        {
-                            Debug.WriteLine("start connection");
-                            _StreamingDisposable = _StreamingMessage.Connect();
-                            Debug.WriteLine("connected");
+                            _StreamingMessage.OfType<EventMessage>().Subscribe(x =>
+                            {
+                                Debug.WriteLine(String.Format("event: {0}: {1}", x.Source.Name, x.Target.Name));
+                            });
+                            _StreamingMessage.OfType<WarningMessage>().Subscribe(x =>
+                            {
+                                Debug.WriteLine(String.Format("warning: {0}: {1}", x.Code, x.Message));
+                            });
+                            _StreamingMessage.OfType<DeleteMessage>().Subscribe(x =>
+                            {
+                                Debug.WriteLine(String.Format("delete: {0}: {1}", x.Id, x.UserId));
+                                FakeStatusMessage sm = (from ft in TweetList where ft.Id == x.Id select ft).FirstOrDefault();
+                                if (sm != null)
+                                {
+                                    Device.BeginInvokeOnMainThread(() =>
+                                    {
+                                        TweetList.Remove(sm);
+                                    });
+                                }
+                            });
+                            _StreamingMessage.OfType<DirectMessageMessage>().Subscribe(x =>
+                            {
+                                Debug.WriteLine(String.Format("DM: {0}: {1}", x.DirectMessage.Sender.Name, x.DirectMessage.Text));
+                                FakeDirectMessage dm = new FakeDirectMessage(x.DirectMessage);
+                                Device.BeginInvokeOnMainThread(() =>
+                                {
+                                    DMList.Insert(0, dm);
+                                });
+                                CrossLocalNotifications.Current.Show("receive DM", "from @" + x.DirectMessage.Sender.ScreenName);
+                            });
+                            _StreamingMessage.OfType<DisconnectMessage>().Subscribe(x =>
+                            {
+                                Debug.WriteLine(String.Format("disconnect: {0}: {1}", x.Code, x.Reason));
+                            });
                         }
-                        catch (Exception ex)
+                        if (_StreamingDisposable == null)
                         {
-                            Debug.WriteLine("connecting exception");
-                            Debug.WriteLine(ex);
-                            _StreamingDisposable = null;
+                            try
+                            {
+                                Debug.WriteLine("start connection");
+                                _StreamingDisposable = _StreamingMessage.Connect();
+                                Debug.WriteLine("connected");
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine("connecting exception");
+                                Debug.WriteLine(ex);
+                                _StreamingDisposable = null;
+                            }
                         }
-                    }
+                    });
                 }
                 else
                 {

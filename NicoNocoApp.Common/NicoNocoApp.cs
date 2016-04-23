@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CoreTweet;
+using CoreTweet.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -61,13 +63,21 @@ namespace NicoNocoApp.Common
                         }
                         else
                         {
-                            if (CommonData.Instance.RememberReceiveSwitch)
+                            CommonData.Instance.Tokens.Value.Statuses.HomeTimelineAsync(count => 25).ContinueWith((res2) =>
                             {
                                 Device.BeginInvokeOnMainThread(() =>
                                 {
-                                    CommonData.Instance.IsConnect.Value = CommonData.Instance.LastStreamSwitchValue;
+                                    foreach (var t in res2.Result.Reverse())
+                                    {
+                                        CommonData.Instance.TweetList.Insert(0, new FakeStatusMessage(t));
+                                        CommonData.Instance.LastReceivedTweetId = t.Id;
+                                    }
+                                    if (CommonData.Instance.RememberReceiveSwitch)
+                                    {
+                                        CommonData.Instance.IsConnect.Value = CommonData.Instance.LastStreamSwitchValue;
+                                    }
                                 });
-                            }
+                            });
                         }
                     }
                 });
