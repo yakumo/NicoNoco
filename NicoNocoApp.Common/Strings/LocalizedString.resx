@@ -129,6 +129,9 @@
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="SettingsRememberReceiveSwitch" xml:space="preserve">
+    <value>Remember the last state of the automatic reception</value>
+  </data>
   <data name="Stream" xml:space="preserve">
     <value>Stream</value>
   </data>

@@ -129,6 +129,9 @@
   <data name="Settings" xml:space="preserve">
     <value>設定</value>
   </data>
+  <data name="SettingsRememberReceiveSwitch" xml:space="preserve">
+    <value>自動受信の状態を記憶</value>
+  </data>
   <data name="Stream" xml:space="preserve">
     <value>ストリーム</value>
   </data>

@@ -59,6 +59,16 @@ namespace NicoNocoApp.Common
                                 });
                             });
                         }
+                        else
+                        {
+                            if (CommonData.Instance.RememberReceiveSwitch)
+                            {
+                                Device.BeginInvokeOnMainThread(() =>
+                                {
+                                    CommonData.Instance.IsConnect.Value = CommonData.Instance.LastStreamSwitchValue;
+                                });
+                            }
+                        }
                     }
                 });
             }
@@ -75,13 +85,24 @@ namespace NicoNocoApp.Common
         protected override void OnSleep()
         {
             base.OnSleep();
+            CommonData.Instance.LastStreamSwitchValue = CommonData.Instance.IsConnect.Value;
+            CommonData.Instance.IsConnect.Value = false;
             CommonData.Instance.SaveAsync().ContinueWith((res) => { });
         }
 
         protected override void OnResume()
         {
             base.OnResume();
-            CommonData.Instance.LoadAsync().ContinueWith((res) => { });
+            CommonData.Instance.LoadAsync().ContinueWith((res) =>
+            {
+                if (CommonData.Instance.RememberReceiveSwitch)
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        CommonData.Instance.IsConnect.Value = CommonData.Instance.LastStreamSwitchValue;
+                    });
+                }
+            });
         }
     }
 }

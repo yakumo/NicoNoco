@@ -4,6 +4,7 @@
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
     "ReactiveProperty": "2.7.1",
     "Rx-Main": "2.2.5",
+    "Xam.Plugins.Notifier": "2.0.2",
     "Xam.Plugins.Settings": "2.1.0",
     "Xamarin.Forms": "2.1.0.6529"
   },

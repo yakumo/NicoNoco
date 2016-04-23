@@ -18,6 +18,7 @@ namespace NicoNocoApp.Common
         public ObservableCollection<TweetListTabItem> TabItems { get; } = new ObservableCollection<TweetListTabItem>();
 
         public static IValueConverter userLabelConverter = new MessageUserLabelConverter();
+        public static IValueConverter retweetLabelConverter = new RetweetFromLabelConverter();
 
         public TweetListPage()
         {
@@ -92,14 +93,6 @@ namespace NicoNocoApp.Common
                             VerticalTextAlignment = TextAlignment.Center,
                             FontSize = 11,
                         };
-                        Label idLabel = new Label()
-                        {
-                            HorizontalOptions = LayoutOptions.Start,
-                            VerticalOptions = LayoutOptions.Start,
-                            HorizontalTextAlignment = TextAlignment.Start,
-                            VerticalTextAlignment = TextAlignment.Center,
-                            FontSize = 11,
-                        };
                         Label statusLabel = new Label()
                         {
                             HorizontalOptions = LayoutOptions.FillAndExpand,
@@ -149,16 +142,6 @@ namespace NicoNocoApp.Common
                                                 Children =
                                                 {
                                                     nameLabel,
-                                                    new Label()
-                                                    {
-                                                        HorizontalOptions = LayoutOptions.Start,
-                                                        VerticalOptions=LayoutOptions.Start,
-                                                        HorizontalTextAlignment = TextAlignment.Start,
-                                                        VerticalTextAlignment = TextAlignment.Start,
-                                                        Text = " / ",
-                                                        FontSize = 11,
-                                                    },
-                                                    idLabel,
                                                 }
                                             },
                                             new Frame()
@@ -175,11 +158,10 @@ namespace NicoNocoApp.Common
                             },
                         };
                         nameLabel.SetBinding(Label.TextProperty, new Binding("Writer", BindingMode.OneWay, userLabelConverter));
-                        idLabel.SetBinding(Label.TextProperty, new Binding("Status.User.ScreenName"));
                         statusLabel.SetBinding(Label.TextProperty, new Binding("Text"));
                         iconImage.SetBinding(Image.SourceProperty, new Binding("Writer.ProfileImageUrl"));
                         retweetUserLabel.SetBinding(Label.IsVisibleProperty, new Binding("IsRetweet"));
-                        retweetUserLabel.SetBinding(Label.TextProperty, new Binding("RetweetUser", BindingMode.OneWay, userLabelConverter));
+                        retweetUserLabel.SetBinding(Label.TextProperty, new Binding("RetweetUser", BindingMode.OneWay, retweetLabelConverter));
                         return cell;
                     }),
                 };

@@ -98,6 +98,15 @@ namespace NicoNocoApp.Common.Strings {
         }
         
         /// <summary>
+        ///   Remember the last state of the automatic reception に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SettingsRememberReceiveSwitch {
+            get {
+                return ResourceManager.GetString("SettingsRememberReceiveSwitch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Stream に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Stream {

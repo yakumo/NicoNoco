@@ -1,5 +1,6 @@
 ﻿using CoreTweet;
 using CoreTweet.Streaming;
+using Plugin.LocalNotifications;
 using Plugin.Settings;
 using Plugin.Settings.Abstractions;
 using Reactive;
@@ -46,6 +47,24 @@ namespace NicoNocoApp.Common
 
         private IConnectableObservable<StreamingMessage> _StreamingMessage { get; set; }
         private IDisposable _StreamingDisposable { get; set; }
+
+        #endregion
+
+        #region SettingsProperty
+
+        ISettings Settings { get; } = CrossSettings.Current;
+
+        public bool RememberReceiveSwitch
+        {
+            get { return Settings.GetValueOrDefault<bool>("RememberReceiveSwitch"); }
+            set { Settings.AddOrUpdateValue<bool>("RememberReceiveSwitch", value); }
+        }
+
+        public bool LastStreamSwitchValue
+        {
+            get { return Settings.GetValueOrDefault<bool>("LastStreamSwitchValue"); }
+            set { Settings.AddOrUpdateValue<bool>("LastStreamSwitchValue", value); }
+        }
 
         #endregion
 
@@ -125,6 +144,7 @@ namespace NicoNocoApp.Common
                             {
                                 DMList.Insert(0, dm);
                             });
+                            CrossLocalNotifications.Current.Show("receive DM", "from @" + x.DirectMessage.Sender.ScreenName);
                         });
                         _StreamingMessage.OfType<DisconnectMessage>().Subscribe(x =>
                         {

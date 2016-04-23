@@ -42,4 +42,22 @@ namespace NicoNocoApp.Common
             throw new NotImplementedException();
         }
     }
+
+    public class RetweetFromLabelConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is User && targetType == typeof(string))
+            {
+                User u = value as User;
+                return String.Format(LocalizedString.RetweetBy, String.Format(LocalizedString.UserLabelFormat, u.Name, u.ScreenName));
+            }
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
