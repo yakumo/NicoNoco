@@ -132,7 +132,7 @@ namespace NicoNocoApp.Common
                         {
                             View = new StackLayout()
                             {
-                                Padding = new Thickness(3, 8),
+                                Padding = new Thickness(8, 3),
                                 Orientation = StackOrientation.Horizontal,
                                 HorizontalOptions = LayoutOptions.FillAndExpand,
                                 VerticalOptions = LayoutOptions.Start,
@@ -159,7 +159,7 @@ namespace NicoNocoApp.Common
                                             },
                                             new Frame()
                                             {
-                                                Padding = new Thickness(5, 10),
+                                                Padding = new Thickness(10, 5),
                                                 HorizontalOptions = LayoutOptions.FillAndExpand,
                                                 VerticalOptions=LayoutOptions.End,
                                                 OutlineColor = Color.FromRgb(0.7, 0.7, 0.85),

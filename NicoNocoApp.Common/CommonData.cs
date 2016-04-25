@@ -34,7 +34,7 @@ namespace NicoNocoApp.Common
         #region properties
 
         public ObservableCollection<FakeStatusMessage> TweetList { get; private set; }
-        public ObservableCollection<StatusMessage> ReplyList { get; private set; }
+        public ObservableCollection<FakeStatusMessage> ReplyList { get; private set; }
         public ObservableCollection<FakeDirectMessage> DMList { get; private set; }
 
         public ReactiveProperty<bool> IsAuthorized { get; set; }
@@ -48,6 +48,8 @@ namespace NicoNocoApp.Common
 
         private IConnectableObservable<StreamingMessage> _StreamingMessage { get; set; }
         private IDisposable _StreamingDisposable { get; set; }
+
+        public UserResponse User { get; set; } = null;
 
         public long LastReceivedTweetId { get; set; }
         public long LastReceivedReplyId { get; set; }
@@ -78,7 +80,7 @@ namespace NicoNocoApp.Common
         public CommonData()
         {
             TweetList = new ReactiveCollection<FakeStatusMessage>();
-            ReplyList = new ObservableCollection<StatusMessage>();
+            ReplyList = new ObservableCollection<FakeStatusMessage>();
             DMList = new ObservableCollection<FakeDirectMessage>();
             IsAuthorized = new ReactiveProperty<bool>(false);
             Tokens = new ReactiveProperty<Tokens>();
@@ -116,6 +118,11 @@ namespace NicoNocoApp.Common
 
         public async Task InitialReadStatuses()
         {
+            if (User == null)
+            {
+                User = await Tokens.Value.Account.VerifyCredentialsAsync();
+            }
+
             ListedResponse<Status> statuses;
             if (LastReceivedTweetId == 0)
             {
@@ -137,6 +144,20 @@ namespace NicoNocoApp.Common
                         CommonData.Instance.LastReceivedTweetId = t.Id;
                     }
                     Debug.WriteLine("receive:" + t.Id);
+                }
+            });
+
+            statuses = await Tokens.Value.Statuses.MentionsTimelineAsync(count => LastItemReadCount);
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                foreach (var t in statuses.Reverse())
+                {
+                    CommonData.Instance.ReplyList.Insert(0, new FakeStatusMessage(t));
+                    if (CommonData.Instance.LastReceivedReplyId < t.Id)
+                    {
+                        CommonData.Instance.LastReceivedReplyId = t.Id;
+                    }
+                    Debug.WriteLine("reply:" + t.Id);
                 }
             });
 
@@ -174,6 +195,14 @@ namespace NicoNocoApp.Common
                         if (TweetList.Count > 1000)
                         {
                             TweetList.Remove(TweetList.Last());
+                        }
+                        if ((!String.IsNullOrEmpty(x.Status.InReplyToScreenName) && (x.Status.InReplyToScreenName == User?.ScreenName)) || (x.Status.InReplyToUserId.HasValue && (x.Status.InReplyToUserId == User?.Id)))
+                        {
+                            ReplyList.Insert(0, new FakeStatusMessage(x.Status));
+                            if (ReplyList.Count > 1000)
+                            {
+                                ReplyList.Remove(ReplyList.Last());
+                            }
                         }
                     });
                     LastReceivedTweetId = x.Status.Id;
