@@ -62,6 +62,51 @@ namespace NicoNocoApp.Common.Strings {
         }
         
         /// <summary>
+        ///   DM に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string DirectMessage {
+            get {
+                return ResourceManager.GetString("DirectMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Reply に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Mensions {
+            get {
+                return ResourceManager.GetString("Mensions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Retweet by {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string RetweetBy {
+            get {
+                return ResourceManager.GetString("RetweetBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Settings に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Settings {
+            get {
+                return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Remember the last state of the automatic reception に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SettingsRememberReceiveSwitch {
+            get {
+                return ResourceManager.GetString("SettingsRememberReceiveSwitch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Stream に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Stream {
@@ -71,11 +116,29 @@ namespace NicoNocoApp.Common.Strings {
         }
         
         /// <summary>
+        ///   Timeline に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Timeline {
+            get {
+                return ResourceManager.GetString("Timeline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Tweet に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Tweet {
             get {
                 return ResourceManager.GetString("Tweet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0} / @{1} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string UserLabelFormat {
+            get {
+                return ResourceManager.GetString("UserLabelFormat", resourceCulture);
             }
         }
         

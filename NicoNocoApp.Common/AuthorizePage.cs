@@ -85,7 +85,12 @@ namespace NicoNocoApp.Common
                 enterButton.IsEnabled = false;
                 session.GetTokensAsync(pin).ContinueWith((res) =>
                 {
-                    CommonData.Instance.Tokens.Value = Tokens.Create(Constants.Internal.ConsumerKey, Constants.Internal.ConsumerSecret, res.Result.AccessToken, res.Result.AccessTokenSecret);
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        codeInput.IsEnabled = true;
+                        enterButton.IsEnabled = true;
+                        CommonData.Instance.Tokens.Value = Tokens.Create(Constants.Internal.ConsumerKey, Constants.Internal.ConsumerSecret, res.Result.AccessToken, res.Result.AccessTokenSecret);
+                    });
                 });
             });
         }
