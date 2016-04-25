@@ -49,6 +49,10 @@ namespace NicoNocoApp.Common
         private IConnectableObservable<StreamingMessage> _StreamingMessage { get; set; }
         private IDisposable _StreamingDisposable { get; set; }
 
+        public long LastReceivedTweetId { get; set; }
+        public long LastReceivedReplyId { get; set; }
+        public long LastReceiveDirectMessageId { get; set; }
+
         #endregion
 
         #region SettingsProperty
@@ -65,12 +69,6 @@ namespace NicoNocoApp.Common
         {
             get { return Settings.GetValueOrDefault<bool>("LastStreamSwitchValue"); }
             set { Settings.AddOrUpdateValue<bool>("LastStreamSwitchValue", value); }
-        }
-
-        public long LastReceivedTweetId
-        {
-            get { return Settings.GetValueOrDefault<long>("LastReceivedTweetId"); }
-            set { Settings.AddOrUpdateValue<long>("LastReceivedTweetId", value);Debug.WriteLine("received id:" + value); }
         }
 
         #endregion
@@ -103,107 +101,142 @@ namespace NicoNocoApp.Common
             {
                 if (flg)
                 {
-                    Task<ListedResponse<Status>> task;
-                    if (LastReceivedTweetId == 0)
+                    StartConnection().ContinueWith((res) =>
                     {
-                        task = Tokens.Value.Statuses.HomeTimelineAsync(count => 25);
-                    }
-                    else
-                    {
-                        task = Tokens.Value.Statuses.HomeTimelineAsync(since_id => LastReceivedTweetId);
-                    }
-                    task.ContinueWith((res) =>
-                    {
-                        Device.BeginInvokeOnMainThread(() =>
-                        {
-                            foreach (var t in res.Result.Reverse())
-                            {
-                                CommonData.Instance.TweetList.Insert(0, new FakeStatusMessage(t));
-                                CommonData.Instance.LastReceivedTweetId = t.Id;
-                            }
-                        });
-
-                        if (_StreamingMessage == null)
-                        {
-                            _StreamingMessage = this.Tokens.Value.Streaming.UserAsObservable().Publish();
-                            _StreamingMessage.Subscribe(x =>
-                            {
-                                Debug.WriteLine("type:" + x.Type);
-                            });
-                            _StreamingMessage.OfType<StatusMessage>().Subscribe(x =>
-                            {
-                                Debug.WriteLine(String.Format("{0}: {1}", x.Status.User.ScreenName, x.Status.Text));
-                                Device.BeginInvokeOnMainThread(() =>
-                                {
-                                    TweetList.Insert(0, new FakeStatusMessage(x.Status));
-                                    if (TweetList.Count > 1000)
-                                    {
-                                        TweetList.Remove(TweetList.Last());
-                                    }
-                                });
-                                LastReceivedTweetId = x.Status.Id;
-                            });
-                            _StreamingMessage.OfType<EventMessage>().Subscribe(x =>
-                            {
-                                Debug.WriteLine(String.Format("event: {0}: {1}", x.Source.Name, x.Target.Name));
-                            });
-                            _StreamingMessage.OfType<WarningMessage>().Subscribe(x =>
-                            {
-                                Debug.WriteLine(String.Format("warning: {0}: {1}", x.Code, x.Message));
-                            });
-                            _StreamingMessage.OfType<DeleteMessage>().Subscribe(x =>
-                            {
-                                Debug.WriteLine(String.Format("delete: {0}: {1}", x.Id, x.UserId));
-                                FakeStatusMessage sm = (from ft in TweetList where ft.Id == x.Id select ft).FirstOrDefault();
-                                if (sm != null)
-                                {
-                                    Device.BeginInvokeOnMainThread(() =>
-                                    {
-                                        TweetList.Remove(sm);
-                                    });
-                                }
-                            });
-                            _StreamingMessage.OfType<DirectMessageMessage>().Subscribe(x =>
-                            {
-                                Debug.WriteLine(String.Format("DM: {0}: {1}", x.DirectMessage.Sender.Name, x.DirectMessage.Text));
-                                FakeDirectMessage dm = new FakeDirectMessage(x.DirectMessage);
-                                Device.BeginInvokeOnMainThread(() =>
-                                {
-                                    DMList.Insert(0, dm);
-                                });
-                                CrossLocalNotifications.Current.Show("receive DM", "from @" + x.DirectMessage.Sender.ScreenName);
-                            });
-                            _StreamingMessage.OfType<DisconnectMessage>().Subscribe(x =>
-                            {
-                                Debug.WriteLine(String.Format("disconnect: {0}: {1}", x.Code, x.Reason));
-                            });
-                        }
-                        if (_StreamingDisposable == null)
-                        {
-                            try
-                            {
-                                Debug.WriteLine("start connection");
-                                _StreamingDisposable = _StreamingMessage.Connect();
-                                Debug.WriteLine("connected");
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.WriteLine("connecting exception");
-                                Debug.WriteLine(ex);
-                                _StreamingDisposable = null;
-                            }
-                        }
                     });
                 }
                 else
                 {
-                    if (_StreamingDisposable != null)
+                    EndConnection();
+                }
+            });
+        }
+
+        const int LastItemReadCount = 25;
+
+        public async Task InitialReadStatuses()
+        {
+            ListedResponse<Status> statuses;
+            if (LastReceivedTweetId == 0)
+            {
+                statuses = await Tokens.Value.Statuses.HomeTimelineAsync(count => LastItemReadCount);
+                Debug.WriteLine("receive count:" + LastItemReadCount);
+            }
+            else
+            {
+                statuses = await Tokens.Value.Statuses.HomeTimelineAsync(since_id => LastReceivedTweetId);
+                Debug.WriteLine("receive since:" + LastReceivedTweetId);
+            }
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                foreach (var t in statuses.Reverse())
+                {
+                    CommonData.Instance.TweetList.Insert(0, new FakeStatusMessage(t));
+                    if (CommonData.Instance.LastReceivedTweetId < t.Id)
                     {
-                        _StreamingDisposable.Dispose();
-                        _StreamingDisposable = null;
+                        CommonData.Instance.LastReceivedTweetId = t.Id;
+                    }
+                    Debug.WriteLine("receive:" + t.Id);
+                }
+            });
+
+            ListedResponse<DirectMessage> dms = await Tokens.Value.DirectMessages.ReceivedAsync(count => LastItemReadCount);
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                foreach (var t in dms.Reverse())
+                {
+                    CommonData.Instance.DMList.Insert(0, new FakeDirectMessage(t));
+                    if (CommonData.Instance.LastReceiveDirectMessageId < t.Id)
+                    {
+                        CommonData.Instance.LastReceiveDirectMessageId = t.Id;
                     }
                 }
             });
+        }
+
+        async Task StartConnection()
+        {
+            await InitialReadStatuses();
+
+            if (_StreamingMessage == null)
+            {
+                _StreamingMessage = this.Tokens.Value.Streaming.UserAsObservable().Publish();
+                _StreamingMessage.Subscribe(x =>
+                {
+                    Debug.WriteLine("type:" + x.Type);
+                });
+                _StreamingMessage.OfType<StatusMessage>().Subscribe(x =>
+                {
+                    Debug.WriteLine(String.Format("{0}: {1}", x.Status.User.ScreenName, x.Status.Text));
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        TweetList.Insert(0, new FakeStatusMessage(x.Status));
+                        if (TweetList.Count > 1000)
+                        {
+                            TweetList.Remove(TweetList.Last());
+                        }
+                    });
+                    LastReceivedTweetId = x.Status.Id;
+                });
+                _StreamingMessage.OfType<EventMessage>().Subscribe(x =>
+                {
+                    Debug.WriteLine(String.Format("event: {0}: {1}", x.Source.Name, x.Target.Name));
+                });
+                _StreamingMessage.OfType<WarningMessage>().Subscribe(x =>
+                {
+                    Debug.WriteLine(String.Format("warning: {0}: {1}", x.Code, x.Message));
+                });
+                _StreamingMessage.OfType<DeleteMessage>().Subscribe(x =>
+                {
+                    Debug.WriteLine(String.Format("delete: {0}: {1}", x.Id, x.UserId));
+                    FakeStatusMessage sm = (from ft in TweetList where ft.Id == x.Id select ft).FirstOrDefault();
+                    if (sm != null)
+                    {
+                        Device.BeginInvokeOnMainThread(() =>
+                        {
+                            TweetList.Remove(sm);
+                        });
+                    }
+                });
+                _StreamingMessage.OfType<DirectMessageMessage>().Subscribe(x =>
+                {
+                    Debug.WriteLine(String.Format("DM: {0}: {1}", x.DirectMessage.Sender.Name, x.DirectMessage.Text));
+                    FakeDirectMessage dm = new FakeDirectMessage(x.DirectMessage);
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        DMList.Insert(0, dm);
+                    });
+                    CrossLocalNotifications.Current.Show("receive DM", "from @" + x.DirectMessage.Sender.ScreenName);
+                });
+                _StreamingMessage.OfType<DisconnectMessage>().Subscribe(x =>
+                {
+                    Debug.WriteLine(String.Format("disconnect: {0}: {1}", x.Code, x.Reason));
+                });
+            }
+            if (_StreamingDisposable == null)
+            {
+                try
+                {
+                    Debug.WriteLine("start connection");
+                    _StreamingDisposable = _StreamingMessage.Connect();
+                    Debug.WriteLine("connected");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("connecting exception");
+                    Debug.WriteLine(ex);
+                    _StreamingDisposable = null;
+                }
+            }
+        }
+
+        void EndConnection()
+        {
+            if (_StreamingDisposable != null)
+            {
+                _StreamingDisposable.Dispose();
+                _StreamingDisposable = null;
+            }
         }
 
         const string AccessTokenKey = "AccessToken";

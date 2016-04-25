@@ -12,6 +12,7 @@ namespace NicoNocoApp.Common
 
         User Writer { get; }
         string Text { get; }
+        DateTimeOffset Posted { get;}
 
         bool IsRetweet { get; }
         User RetweetUser { get; }
@@ -51,6 +52,24 @@ namespace NicoNocoApp.Common
             {
                 User u = value as User;
                 return String.Format(LocalizedString.RetweetBy, String.Format(LocalizedString.UserLabelFormat, u.Name, u.ScreenName));
+            }
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class PostedDateFormatConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is DateTimeOffset && targetType == typeof(string))
+            {
+                DateTimeOffset v = (DateTimeOffset)value;
+                return v.ToString("yyyy/MM/dd hh:mm");
             }
             return null;
         }

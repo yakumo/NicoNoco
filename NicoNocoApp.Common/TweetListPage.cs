@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using System.Globalization;
 
 namespace NicoNocoApp.Common
 {
@@ -19,6 +20,7 @@ namespace NicoNocoApp.Common
 
         public static IValueConverter userLabelConverter = new MessageUserLabelConverter();
         public static IValueConverter retweetLabelConverter = new RetweetFromLabelConverter();
+        public static IValueConverter postedDateFormatConverter = new PostedDateFormatConverter();
 
         public TweetListPage()
         {
@@ -92,6 +94,16 @@ namespace NicoNocoApp.Common
                             HorizontalTextAlignment = TextAlignment.Start,
                             VerticalTextAlignment = TextAlignment.Center,
                             FontSize = 11,
+                            FontAttributes = FontAttributes.Bold,
+                        };
+                        Label postedDateLabel = new Label()
+                        {
+                            HorizontalOptions = LayoutOptions.EndAndExpand,
+                            VerticalOptions = LayoutOptions.Start,
+                            HorizontalTextAlignment = TextAlignment.End,
+                            VerticalTextAlignment = TextAlignment.Center,
+                            TextColor = Color.FromRgb(0.8, 0.8, 0.9),
+                            FontSize = 11,
                         };
                         Label statusLabel = new Label()
                         {
@@ -137,17 +149,20 @@ namespace NicoNocoApp.Common
                                             new StackLayout()
                                             {
                                                 Orientation = StackOrientation.Horizontal,
-                                                HorizontalOptions = LayoutOptions.Start,
+                                                HorizontalOptions = LayoutOptions.FillAndExpand,
                                                 VerticalOptions=LayoutOptions.Start,
                                                 Children =
                                                 {
                                                     nameLabel,
+                                                    postedDateLabel,
                                                 }
                                             },
                                             new Frame()
                                             {
-                                                Padding = new Thickness(15, 10),
-                                                OutlineColor = Color.FromRgb(0.6, 0.8, 1.0),
+                                                Padding = new Thickness(5, 10),
+                                                HorizontalOptions = LayoutOptions.FillAndExpand,
+                                                VerticalOptions=LayoutOptions.End,
+                                                OutlineColor = Color.FromRgb(0.7, 0.7, 0.85),
                                                 HasShadow = true,
                                                 Content = statusLabel,
                                             },
@@ -158,6 +173,7 @@ namespace NicoNocoApp.Common
                             },
                         };
                         nameLabel.SetBinding(Label.TextProperty, new Binding("Writer", BindingMode.OneWay, userLabelConverter));
+                        postedDateLabel.SetBinding(Label.TextProperty, new Binding("Posted", BindingMode.OneWay, postedDateFormatConverter));
                         statusLabel.SetBinding(Label.TextProperty, new Binding("Text"));
                         iconImage.SetBinding(Image.SourceProperty, new Binding("Writer.ProfileImageUrl"));
                         retweetUserLabel.SetBinding(Label.IsVisibleProperty, new Binding("IsRetweet"));
@@ -179,13 +195,23 @@ namespace NicoNocoApp.Common
                             itemsList,
                             new StackLayout()
                             {
-                                Padding = new Thickness(5, 5),
+                                Padding = new Thickness(0, 1, 0, 0),
                                 HorizontalOptions = LayoutOptions.FillAndExpand,
                                 VerticalOptions = LayoutOptions.End,
-                                BackgroundColor = Color.FromRgb(0.9,0.9,1.0),
+                                BackgroundColor = Color.FromRgb(0.6,0.6,0.8),
                                 Children =
                                 {
-                                    tabNameLabel,
+                                    new StackLayout()
+                                    {
+                                        Padding = new Thickness(0, 15),
+                                        HorizontalOptions = LayoutOptions.FillAndExpand,
+                                        VerticalOptions = LayoutOptions.FillAndExpand,
+                                        BackgroundColor = Color.White,
+                                        Children =
+                                        {
+                                            tabNameLabel,
+                                        },
+                                    },
                                 }
                             },
                         }, // Children

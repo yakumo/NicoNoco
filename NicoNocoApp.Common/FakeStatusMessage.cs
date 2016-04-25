@@ -34,20 +34,9 @@ namespace NicoNocoApp.Common
             get { return Status.Text; }
         }
 
-        public bool IsRetweet
+        public DateTimeOffset Posted
         {
-            get { return _targetStatus.RetweetedStatus != null; }
-        }
-
-        public User RetweetUser
-        {
-            get { return IsRetweet ? _targetStatus.User : null; }
-        }
-
-        /*
-        public Status Status
-        {
-            get { return _targetStatus.RetweetedStatus ?? _targetStatus; }
+            get { return Status.CreatedAt; }
         }
 
         public bool IsRetweet
@@ -59,11 +48,5 @@ namespace NicoNocoApp.Common
         {
             get { return IsRetweet ? _targetStatus.User : null; }
         }
-
-        public string RetweetUserLabel
-        {
-            get { return IsRetweet ? String.Format(LocalizedString.RetweetBy, RetweetUser.Name, RetweetUser.ScreenName) : ""; }
-        }
-        */
     }
 }

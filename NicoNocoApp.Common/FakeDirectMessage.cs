@@ -23,6 +23,11 @@ namespace NicoNocoApp.Common
             get { return false; }
         }
 
+        public DateTimeOffset Posted
+        {
+            get { return _message.CreatedAt; }
+        }
+
         public User RetweetUser
         {
             get { return null; }

@@ -63,15 +63,10 @@ namespace NicoNocoApp.Common
                         }
                         else
                         {
-                            CommonData.Instance.Tokens.Value.Statuses.HomeTimelineAsync(count => 25).ContinueWith((res2) =>
+                            CommonData.Instance.InitialReadStatuses().ContinueWith((res2) =>
                             {
                                 Device.BeginInvokeOnMainThread(() =>
                                 {
-                                    foreach (var t in res2.Result.Reverse())
-                                    {
-                                        CommonData.Instance.TweetList.Insert(0, new FakeStatusMessage(t));
-                                        CommonData.Instance.LastReceivedTweetId = t.Id;
-                                    }
                                     if (CommonData.Instance.RememberReceiveSwitch)
                                     {
                                         CommonData.Instance.IsConnect.Value = CommonData.Instance.LastStreamSwitchValue;
